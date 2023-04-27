@@ -1,43 +1,96 @@
-const User = require("../models/User")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
+const User = require("../models/User")
+const Portal = require("../models/Portal")
 const { customResourceResponse, expiresIn, resetPassword } = require("../utils/constants")
+
+exports.portalSignIn = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    if (!email || !password) {
+      return res
+        .status(customResourceResponse.reqValidationError.statusCode)
+        .json({ message: customResourceResponse.reqValidationError.message })
+    }
+
+    const portal = await Portal.findOne({ email: email.trim().toLowerCase() })
+    if (!portal) {
+      return res
+        .status(customResourceResponse.recordNotFound.statusCode)
+        .json({ message: customResourceResponse.recordNotFound.message })
+    }
+
+    const match = await bcrypt.compare(password, portal.password)
+    if (!match) return res.status(400).json({ message: "Wrong Password" })
+
+    const payload = {
+      id: portal._id,
+      email: portal.email
+    }
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: expiresIn },
+      (err, token) => {
+        if (err) {
+          return res
+            .status(customResourceResponse.serverError.statusCode)
+            .json({ message: customResourceResponse.serverError.message })
+        }
+
+        Portal.findByIdAndUpdate(portal._id, { last_login: new Date() })
+          .then(() => {
+            return res.status(200).json({ token: token, user: portal })
+          }).catch((err) => {
+            return res
+              .status(customResourceResponse.serverError.statusCode)
+              .json({ message: customResourceResponse.serverError.message })
+          })
+      }
+    )
+  } catch (err) {
+    return res
+      .status(customResourceResponse.serverError.statusCode)
+      .json({ message: customResourceResponse.serverError.message })
+  }
+}
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body
     const user = await User.findOne({ email: email.trim().toLowerCase() })
-    if (user) {
-      const match = await bcrypt.compare(password, user.password)
-      if (!match) return res.status(400).json({ message: 'Wrong Password' })
+    if (!user) return res.status(400).json({ message: `User doesn't exist` })
 
-      const payload = {
-        id: user._id,
-        email: user.email
-      }
+    const match = await bcrypt.compare(password, user.password)
+    if (!match) return res.status(400).json({ message: 'Wrong Password' })
 
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        { expiresIn: expiresIn },
-        (err, token) => {
-          if (err) {
+    const payload = {
+      id: user._id,
+      email: user.email
+    }
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: expiresIn },
+      (err, token) => {
+        if (err) {
+          return res
+            .status(customResourceResponse.serverError.statusCode)
+            .json({ message: customResourceResponse.serverError.message })
+        }
+
+        User.findByIdAndUpdate(user._id, { last_login: new Date() })
+          .then(() => {
+            return res.status(200).json({ token: token, user: user })
+          }).catch((err) => {
             return res
               .status(customResourceResponse.serverError.statusCode)
               .json({ message: customResourceResponse.serverError.message })
-          }
-
-          User.findByIdAndUpdate(user._id, { last_login: new Date() })
-            .then(() => {
-              return res.status(200).json({ token: token, user: user })
-            }).catch((err) => {
-              return res
-                .status(customResourceResponse.serverError.statusCode)
-                .json({ message: customResourceResponse.serverError.message })
-            })
-        }
-      )
-    } else return res.status(400).json({ message: `User doesn't exist` })
+          })
+      }
+    )
   } catch (err) {
     return res
       .status(customResourceResponse.serverError.statusCode)
@@ -86,8 +139,8 @@ exports.addUser = async (req, res) => {
 
     if (!user) {
       return res
-        .status(customResourceResponse.serverError.statusCode)
-        .json({ message: customResourceResponse.serverError.message })
+        .status(customResourceResponse.recordNotFound.statusCode)
+        .json({ message: customResourceResponse.recordNotFound.message })
     }
 
     return res
