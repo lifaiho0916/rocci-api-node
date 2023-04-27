@@ -3,19 +3,21 @@ const User = require("../models/User")
 const { customResourceResponse } = require("../utils/constants")
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers['Authorization']
+  console.log(req.url)
+  const token = req.headers['authorization'].split(' ')[1]
   if (token == null) {
-    response.message = customResourceResponse.reqValidationError.message
-    response.statusCode = customResourceResponse.reqValidationError.statusCode
-    return response
+    return res
+      .status(customResourceResponse.reqValidationError.statusCode)
+      .json({ message: customResourceResponse.reqValidationError.message })
   }
+  
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) {
-      response.message = customResourceResponse.reqValidationError.message
-      response.statusCode = customResourceResponse.reqValidationError.statusCode
-      return response
+      return res
+        .status(customResourceResponse.reqValidationError.statusCode)
+        .json({ message: customResourceResponse.reqValidationError.message })
     }
-    const user = await User.findOne({ _id: decoded._id })
+    const user = await User.findById(decoded.id)
     req.user = user
     next()
   })
