@@ -59,7 +59,7 @@ exports.portalSignIn = async (req, res) => {
 exports.login = async (req, res) => {
   try {
 
-    console.log("",req.body)
+    console.log("BODY!!!",req.body)
 
     const { email, password } = req.body
 
