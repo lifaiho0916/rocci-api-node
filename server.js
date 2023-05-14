@@ -10,6 +10,8 @@ dotenv.config({ path: __dirname + "/.env" })
 const port = process.env.PORT || 5000
 const MONGO_URI = process.env.MONGO_URI
 
+console.log(MONGO_URI)
+
 const app = express()
 const server = http.createServer(app)
 
