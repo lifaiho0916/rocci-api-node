@@ -59,6 +59,9 @@ exports.portalSignIn = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body
+
+    console.log(req.body)
+
     const user = await User.findOne({ email: email.trim().toLowerCase() })
     if (!user) return res.status(400).json({ message: `User doesn't exist` })
 
