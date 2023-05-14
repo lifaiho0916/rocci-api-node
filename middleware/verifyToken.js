@@ -3,7 +3,7 @@ const User = require("../models/User")
 const { customResourceResponse } = require("../utils/constants")
 
 const verifyToken = (req, res, next) => {
-  console.log(req.url)
+  console.log("URL",req.url)
   let token=null;
   try{
     token = req.headers['authorization'].split(' ')[1]
