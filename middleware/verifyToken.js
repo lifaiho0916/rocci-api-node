@@ -4,7 +4,11 @@ const { customResourceResponse } = require("../utils/constants")
 
 const verifyToken = (req, res, next) => {
   console.log(req.url)
+  try{
   const token = req.headers['authorization'].split(' ')[1]
+  }catch(e){
+    const token=null;
+  }
   if (token == null) {
     return res
       .status(customResourceResponse.reqValidationError.statusCode)
