@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
           console.log(r.route.path)
         }
       })
-    return res.status(200).json({"status":"OK"})
+    return res.status(200).json({"status":"OK", "path": router.stack})
 });
 
 module.exports = router
