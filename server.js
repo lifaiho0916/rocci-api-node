@@ -22,7 +22,7 @@ app.use(router)
 
 //mongoose.connect(MONGO_URI)
 
-mongoose.connect(MONGO_URI, {userMongoClient: true})
+mongoose.connect(MONGO_URI)
   .then(async () => {
     console.log('db connected')
   }).catch(err => console.log(err))
