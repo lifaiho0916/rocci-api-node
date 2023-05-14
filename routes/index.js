@@ -21,4 +21,9 @@ router.get("/api/v1/discounts", verifyToken, discountController.getAllDiscounts)
 router.get("/api/v1/search/:lemma", verifyToken, dictionaryController.getMeanByLemma)
 router.get("/api/v1/sugg/:lemma", verifyToken, dictionaryController.getSuggByLemma)
 
+router.get('/', async (req, res) => {
+    console.log("GET!!!")
+    return res.status(200).json({"status":"OK"})
+});
+
 module.exports = router
