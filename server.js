@@ -20,7 +20,9 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(router)
 
-mongoose.connect(MONGO_URI)
+//mongoose.connect(MONGO_URI)
+
+mongoose.connect(MONGO_URI, {userMongoClient: true})
   .then(async () => {
     console.log('db connected')
   }).catch(err => console.log(err))
