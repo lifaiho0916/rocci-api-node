@@ -57,9 +57,10 @@ exports.portalSignIn = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
+  console.log("BODY!!!",req.body)
+
   try {
 
-    console.log("BODY!!!",req.body)
 
     const { email, password } = req.body
 
@@ -97,6 +98,9 @@ exports.login = async (req, res) => {
       }
     )
   } catch (err) {
+
+
+    console.log("ERRORE!!!")
     return res
       .status(customResourceResponse.serverError.statusCode)
       .json({ message: customResourceResponse.serverError.message })
