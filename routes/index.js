@@ -23,6 +23,11 @@ router.get("/api/v1/sugg/:lemma", verifyToken, dictionaryController.getSuggByLem
 
 router.get('/', async (req, res) => {
     console.log("GET!!!")
+    router.stack.forEach(function(r){
+        if (r.route && r.route.path){
+          console.log(r.route.path)
+        }
+      })
     return res.status(200).json({"status":"OK"})
 });
 
