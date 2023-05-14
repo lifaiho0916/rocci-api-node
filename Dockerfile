@@ -5,4 +5,4 @@ RUN mkdir -p $WDIR
 WORKDIR $WDIR
 COPY ./ $WDIR
 RUN npm i
-CMD ["npm","start"]
+CMD ["node",'--max-old-space-size=16384',"server.js"]
