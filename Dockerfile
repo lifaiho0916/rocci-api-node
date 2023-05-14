@@ -5,4 +5,4 @@ RUN mkdir -p $WDIR
 WORKDIR $WDIR
 COPY ./ $WDIR
 RUN npm i
-CMD ["node","server.js"]
+CMD ["npm","start"]
